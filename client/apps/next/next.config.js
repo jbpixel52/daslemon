@@ -8,7 +8,7 @@ const boolVals = {
 }
 
 const disableExtraction =
-  boolVals[process.env.DISABLE_EXTRACTION] ?? process.env.NODE_ENV === 'development'
+  boolVals[ process.env.DISABLE_EXTRACTION ] ?? process.env.NODE_ENV === 'development'
 
 console.log(`
 
@@ -34,8 +34,8 @@ Remove this log in next.config.js.
 const plugins = [
   withTamagui({
     config: './tamagui.config.ts',
-    components: ['tamagui', '@my/ui'],
-    importsWhitelist: ['constants.js', 'colors.js'],
+    components: [ 'tamagui', '@my/ui' ],
+    importsWhitelist: [ 'constants.js', 'colors.js' ],
     outputCSS: process.env.NODE_ENV === 'production' ? './public/tamagui.css' : null,
     logTimings: true,
     disableExtraction,
@@ -44,13 +44,27 @@ const plugins = [
         return true
       }
     },
-    excludeReactNativeWebExports: ['Switch', 'ProgressBar', 'Picker', 'CheckBox', 'Touchable'],
+    excludeReactNativeWebExports: [ 'Switch', 'ProgressBar', 'Picker', 'CheckBox', 'Touchable' ],
   }),
 ]
 
 module.exports = function () {
   /** @type {import('next').NextConfig} */
   let config = {
+    async headers() {
+      return [
+        {
+          // matching all API routes
+          source: "/api/:path*",
+          headers: [
+            { key: "Access-Control-Allow-Credentials", value: "true" },
+            { key: "Access-Control-Allow-Origin", value: "*" }, // replace this your actual origin
+            { key: "Access-Control-Allow-Methods", value: "GET,DELETE,PATCH,POST,PUT" },
+            { key: "Access-Control-Allow-Headers", value: "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" },
+          ]
+        }
+      ]
+    },
     typescript: {
       ignoreBuildErrors: true,
     },
